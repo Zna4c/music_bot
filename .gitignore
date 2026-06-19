@@ -1,0 +1,10 @@
+node_modules/
+.env
+ffmpeg.exe
+ffmpeg
+yt-dlp.exe
+yt-dlp
+ffmpeg-temp.zip
+logs/
+data/
+*.log

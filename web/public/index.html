@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎵 Discord Music Bot</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">🎵</span>
+        <span class="logo-text">MusicBot</span>
+      </div>
+      <div class="sidebar-label">СЕРВЕРИ</div>
+      <div id="guild-list" class="guild-list">
+        <div class="loading-spinner">Завантаження...</div>
+      </div>
+      <div class="sidebar-footer">
+        <button id="btn-show-logs" class="logs-sidebar-btn" title="Консоль / Логи">📋 Логи</button>
+        <div class="bot-status">
+          <span class="status-dot"></span>
+          <span id="bot-tag">Підключення...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- No guild selected -->
+      <div id="welcome-screen" class="welcome-screen">
+        <div class="welcome-icon">🎶</div>
+        <h1>Discord Music Bot</h1>
+        <p>Обери сервер зліва для керування музикою</p>
+        <div class="welcome-features">
+          <div class="feature">⚡ YouTube Music</div>
+          <div class="feature">🔀 Авто-міксування</div>
+          <div class="feature">🤖 Autoplay</div>
+          <div class="feature">📋 Черга треків</div>
+        </div>
+      </div>
+
+      <!-- Player Panel -->
+      <div id="player-panel" class="player-panel hidden">
+        <!-- Now Playing -->
+        <section class="now-playing-section">
+          <div class="now-playing-card">
+            <div class="track-thumbnail-wrap">
+              <img id="track-thumb" src="" alt="thumbnail" class="track-thumbnail">
+              <div class="thumb-overlay">
+                <span id="playing-indicator" class="playing-indicator">▶</span>
+              </div>
+            </div>
+            <div class="track-info">
+              <div class="now-playing-label">🎵 Зараз грає</div>
+              <h2 id="track-title" class="track-title">—</h2>
+              <p id="track-author" class="track-author">—</p>
+              <div class="progress-wrap">
+                <span id="current-time" class="time-label">0:00</span>
+                <div class="progress-bar-bg" id="progress-bar-bg">
+                  <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                  <div class="progress-bar-thumb" id="progress-bar-thumb"></div>
+                </div>
+                <span id="total-time" class="time-label">0:00</span>
+              </div>
+              <div class="seek-btns">
+                <button id="btn-seek-back" class="seek-btn" title="-10 секунд">⏪ 10</button>
+                <button id="btn-seek-fwd" class="seek-btn" title="+10 секунд">10 ⏩</button>
+              </div>
+              <div class="track-meta">
+                <span id="track-duration" class="meta-badge">⏱️ —</span>
+                <span id="voice-channel" class="meta-badge">🔊 —</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Controls -->
+        <section class="controls-section">
+          <div class="controls-top">
+            <button id="btn-autoplay" class="ctrl-btn ctrl-secondary" title="Autoplay">🤖</button>
+            <button id="btn-prev" class="ctrl-btn ctrl-secondary" title="Попередній">⏮️</button>
+            <button id="btn-pause" class="ctrl-btn ctrl-primary" title="Пауза/Відтворення">▶️</button>
+            <button id="btn-skip" class="ctrl-btn ctrl-secondary" title="Пропустити">⏭️</button>
+            <button id="btn-shuffle" class="ctrl-btn ctrl-secondary" title="Перемішати">🔀</button>
+          </div>
+          <div class="controls-bottom">
+            <!-- Loop -->
+            <div class="ctrl-group">
+              <label class="ctrl-label">🔁 Повтор</label>
+              <div class="loop-btns">
+                <button class="loop-btn active" data-loop="none">Вимк</button>
+                <button class="loop-btn" data-loop="track">Трек</button>
+                <button class="loop-btn" data-loop="queue">Черга</button>
+              </div>
+            </div>
+            <!-- Volume -->
+            <div class="ctrl-group">
+              <label class="ctrl-label">🔊 <span id="vol-display">50</span>%</label>
+              <input type="range" id="volume-slider" min="0" max="100" value="50" class="vol-slider">
+            </div>
+            <!-- Stop -->
+            <button id="btn-stop" class="ctrl-btn ctrl-danger">⏹️ Стоп</button>
+          </div>
+        </section>
+
+        <!-- Search -->
+        <section class="search-section">
+          <div class="search-header">
+            <h3>🔍 Пошук</h3>
+          </div>
+          <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Введи назву пісні або YouTube URL..." class="search-input">
+            <button id="search-btn" class="search-btn">Знайти</button>
+          </div>
+          <!-- Voice channel select -->
+          <div class="vc-select-row">
+            <label>🔊 Голосовий канал:</label>
+            <select id="vc-select" class="vc-select">
+              <option value="">Оберіть канал...</option>
+            </select>
+          </div>
+          <div id="search-results" class="search-results"></div>
+        </section>
+
+        <!-- Local Music -->
+        <section class="queue-section" style="margin-top:12px;">
+          <div class="queue-header">
+            <h3>📁 Локальна музика</h3>
+            <button id="btn-refresh-local" class="btn-clear" title="Оновити список">🔄 Оновити</button>
+          </div>
+          <div id="local-music-folder" style="font-size:11px;color:var(--text2);padding:4px 0 8px;word-break:break-all;"></div>
+          <div id="local-music-list" class="queue-list">
+            <div class="queue-empty">Завантаження...</div>
+          </div>
+        </section>
+
+        <!-- Playlists -->
+        <section class="queue-section" style="margin-top:12px;">
+          <div class="queue-header">
+            <h3>📂 Плейлисти</h3>
+          </div>
+          <!-- YouTube playlist import -->
+          <div class="search-bar" style="margin-bottom:10px;">
+            <input type="text" id="yt-playlist-url" placeholder="YouTube плейлист URL (list=...)" class="search-input">
+            <button id="btn-load-yt-playlist" class="search-btn">▶ Завантажити</button>
+          </div>
+          <!-- Create playlist -->
+          <div class="search-bar" style="margin-bottom:10px;">
+            <input type="text" id="pl-name-input" placeholder="Назва нового плейлиста..." class="search-input">
+            <button id="btn-create-playlist" class="search-btn">➕ Створити</button>
+          </div>
+          <div id="playlist-list" class="queue-list">
+            <div class="queue-empty">Немає плейлистів</div>
+          </div>
+        </section>
+        <!-- Queue -->
+        <section class="queue-section">
+          <div class="queue-header">
+            <h3>📋 Черга <span id="queue-count" class="queue-count">0</span></h3>
+            <div style="display:flex;gap:6px;">
+              <button id="btn-save-queue" class="btn-clear" title="Зберегти чергу як плейлист">💾 Зберегти</button>
+              <button id="btn-clear-queue" class="btn-clear">🗑️ Очистити</button>
+            </div>
+          </div>
+          <div id="queue-list" class="queue-list">
+            <div class="queue-empty">Черга порожня</div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Logs Modal -->
+  <div id="logs-modal" class="logs-modal hidden">
+    <div class="logs-modal-inner">
+      <div class="logs-modal-header">
+        <span>📋 Консоль / Логи бота</span>
+        <div class="logs-header-actions">
+          <label class="logs-autoscroll-label">
+            <input type="checkbox" id="logs-autoscroll" checked> Авто-скрол
+          </label>
+          <button id="btn-logs-clear" class="logs-clear-btn" title="Очистити">🗑️</button>
+          <button id="btn-logs-close" class="logs-close-btn" title="Закрити">✕</button>
+        </div>
+      </div>
+      <div id="logs-body" class="logs-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
