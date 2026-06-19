@@ -2,7 +2,7 @@ require('dotenv').config();
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 const { registerCommands } = require('./commands/register');
 const { setupEventHandlers } = require('./events');
-const { startWebServer } = require('../web/server');
+// const { startWebServer } = require('../web/server'); // Web panel temporarily disabled
 const MusicManager = require('./music/MusicManager');
 
 const client = new Client({
@@ -33,11 +33,12 @@ client.commands = new Collection();
 
     console.log('🎵 Discord Music Bot запущено!');
 
-    const webServer = startWebServer(client);
-    const port = process.env.WEB_PORT || 3000;
-    webServer.listen(port, () => {
-      console.log(`🌐 Веб-панель: http://localhost:${port}`);
-    });
+    // Web panel temporarily disabled to avoid healthcheck issues
+    // const webServer = startWebServer(client);
+    // const port = process.env.WEB_PORT || 3000;
+    // webServer.listen(port, () => {
+    //   console.log(`🌐 Веб-панель: http://localhost:${port}`);
+    // });
   } catch (error) {
     console.error('❌ Помилка запуску:', error.message);
     process.exit(1);
