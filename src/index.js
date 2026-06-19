@@ -33,6 +33,10 @@ client.commands = new Collection();
 
     console.log('🎵 Discord Music Bot запущено!');
 
+    // Невелика затримка перед запуском веб-сервера, щоб бот повністю
+    // ініціалізувався до того, як healthcheck почне перевіряти /api/status
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
     const webServer = startWebServer(client);
     const port = process.env.WEB_PORT || 3000;
     webServer.listen(port, () => {
